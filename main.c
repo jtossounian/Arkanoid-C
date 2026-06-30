@@ -11,7 +11,7 @@
 void set_blank_screen();
 void set_borders();
 void draw_all();
-const char* screen[SCREEN_WIDTH][SCREEN_HEIGHT];
+const char* screen[SCREEN_HEIGHT][SCREEN_WIDTH];
 int main () {
     draw_all();
     return 0;
