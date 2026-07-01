@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <unistd.h>
 #define SCREEN_WIDTH 50
 #define SCREEN_HEIGHT 48
 
@@ -9,6 +10,9 @@
 #define BRICK_WIDTH 6
 #define BRICK_HEIGHT 2
 
+short int game_active = 1;
+
+//------- STRUCTURES -------
 
 typedef struct{ //ball
     float x, y;
@@ -35,11 +39,16 @@ void gameInicialization();
 void set_blank_screen();
 void set_borders();
 void draw_all();
+void ball_update();
 const char* screen[SCREEN_HEIGHT][SCREEN_WIDTH];
 
 int main () {
-    draw_all();
-    return 0;
+    gameInicialization();
+    while (game_active == 1) {
+        draw_all();
+        ball_update();
+        usleep(64000);
+    }
 }
 
 //Initial values for game objects
@@ -47,13 +56,17 @@ int main () {
 void gameInicialization() {
     ball.x = SCREEN_WIDTH / 2;
     ball.y = SCREEN_HEIGHT / 2;
-    ball.vx = 0.1f;
-    ball.vy = -0.1f;
-
+    ball.vx = 1.0f;
+    ball.vy = 1.0f;
 
     paddle.x = (int) (SCREEN_WIDTH / 2);
     paddle.size = PADDLE_WIDTH_0;
 }
+
+
+
+
+//------- RENDERS -------
 
 void set_blank_screen() {
     int i, j;
@@ -99,12 +112,8 @@ void set_ball () {
 }
 
 
-//Everything is good until here
-
-
 
 void set_bricks () {
-    //generate all bricks with their health
     int i, j;
     for (i = 0; i < BRICK_ROWS; i++) {
         for (j = 0; j < BRICK_COLUMNS; j++) {
@@ -124,14 +133,12 @@ void set_bricks () {
             screen[start_y][start_x + BRICK_WIDTH - 1] = "┐";
             screen[start_y + BRICK_HEIGHT - 1][start_x] = "└";
             screen[start_y + BRICK_HEIGHT - 1][start_x + BRICK_WIDTH - 1] = "┘";
-            //draw the bricks
         }
     }
 }
 
 void draw_all() {
     //set screen
-    gameInicialization();
     set_blank_screen();
     set_borders();
     set_paddle();
@@ -147,3 +154,36 @@ void draw_all() {
         printf("\n");
     }
 }
+
+//------- END RENDER -------
+
+
+//------- GAME UPDATES -------
+
+void ball_update() {
+
+    //position update
+    ball.x += ball.vx;
+    ball.y += ball.vy;
+
+    if ((int)ball.x <= 1 || (int)ball.x >= SCREEN_WIDTH - 2) {
+        ball.vx *= -1;
+    }
+    if ((int)ball.y <= 1) {
+        ball.vy *= -1;
+    }
+    if ((int)ball.y >= SCREEN_HEIGHT - 1) {
+        game_active = 0;
+        printf("Game Over!\n");
+    }
+
+    //missing collision update with paddle
+    //missing collision update with bricks
+
+}
+
+
+
+
+
+//missing input for paddle
