@@ -7,7 +7,7 @@
 #define BRICK_ROWS 3
 #define BRICK_COLUMNS 8
 #define BRICK_WIDTH 6
-#define BRICK_HEIGHT 3
+#define BRICK_HEIGHT 2
 
 
 typedef struct{ //ball
@@ -117,9 +117,13 @@ void set_bricks () {
 
             for (k = 0; k < BRICK_HEIGHT; k++) {
                 for (l = 0; l < BRICK_WIDTH; l++) {
-                    screen[start_y + k][start_x + l] = "#";
+                    screen[start_y + k][start_x + l] = "─";
                 }
             }
+            screen[start_y][start_x] = "┌";
+            screen[start_y][start_x + BRICK_WIDTH - 1] = "┐";
+            screen[start_y + BRICK_HEIGHT - 1][start_x] = "└";
+            screen[start_y + BRICK_HEIGHT - 1][start_x + BRICK_WIDTH - 1] = "┘";
             //draw the bricks
         }
     }
