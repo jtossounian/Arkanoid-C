@@ -1,5 +1,12 @@
+// to test in windows 
+#ifdef _WIN32
+    #include <windows.h>
+#endif
+
 #include <stdio.h>
 #include <unistd.h>
+#include <curses.h> //used to render and get inputs whitout stoping the program execution 
+//FOR A WIN USER 
 #define SCREEN_WIDTH 50
 #define SCREEN_HEIGHT 48
 
@@ -32,6 +39,8 @@ typedef struct{ //paddle
 Paddle paddle;
 
 
+//------- FUNCTION DECLARATIONS -------
+
 void set_ball();
 void set_bricks();
 void set_paddle();
@@ -40,15 +49,36 @@ void set_blank_screen();
 void set_borders();
 void draw_all();
 void ball_update();
+void paddle_update(int c);
 const char* screen[SCREEN_HEIGHT][SCREEN_WIDTH];
 
 int main () {
+    //maybe it's not necessary if I use ncurses
+  //  #ifdef _WIN32 // to import the simbols used into windows console
+  //      SetConsoleOutputCP(CP_UTF8);
+   // #endif
+
+
+    //------inicialization of ncurses-----
+    initscr();
+    cbreak(); 
+    noecho();
+    curs_set(0);
+    keypad(stdscr, TRUE);
+    nodelay(stdscr, TRUE);
+
     gameInicialization();
+
     while (game_active == 1) {
+        int c= getch();
         draw_all();
         ball_update();
+        paddle_update(c);
         usleep(64000);
     }
+    endwin();
+    printf("Game Over!\n");
+    // should go to the menu (pause state)
 }
 
 //Initial values for game objects
@@ -61,6 +91,15 @@ void gameInicialization() {
 
     paddle.x = (int) (SCREEN_WIDTH / 2);
     paddle.size = PADDLE_WIDTH_0;
+    
+    //BRICKS health
+    int i,j;
+    for (i = 0; i < BRICK_ROWS; i++) {
+        for (j = 0; j < BRICK_COLUMNS; j++) {
+            brick[i][j].health = 1;
+        }
+    } 
+
 }
 
 
@@ -81,7 +120,7 @@ void set_borders() {
 
     //set roof
     int i;
-    for (i = 1; (i + 1) < SCREEN_WIDTH; i++) {
+    for (i = 1; i <= SCREEN_WIDTH; i++) {
         screen[0][i] = "═";
     }
 
@@ -117,13 +156,12 @@ void set_bricks () {
     int i, j;
     for (i = 0; i < BRICK_ROWS; i++) {
         for (j = 0; j < BRICK_COLUMNS; j++) {
-            brick[i][j].health = 1;
-
+           
             int start_y = 1 + i * BRICK_HEIGHT;
             int start_x = 1 + j * BRICK_WIDTH;
 
             int k, l;
-
+            //draws a brick
             for (k = 0; k < BRICK_HEIGHT; k++) {
                 for (l = 0; l < BRICK_WIDTH; l++) {
                     screen[start_y + k][start_x + l] = "─";
@@ -149,10 +187,10 @@ void draw_all() {
     int i, j;
     for (i=0; i < SCREEN_HEIGHT; i++) {
         for (j=0; j < SCREEN_WIDTH; j++) {
-            printf("%s", screen[i][j]);
+            mvprintw(i, j, "%s", screen[i][j]);
         }
-        printf("\n");
     }
+    refresh();//updates what's shown on console
 }
 
 //------- END RENDER -------
@@ -174,14 +212,22 @@ void ball_update() {
     }
     if ((int)ball.y >= SCREEN_HEIGHT - 1) {
         game_active = 0;
-        printf("Game Over!\n");
     }
-
     //missing collision update with paddle
     //missing collision update with bricks
 
 }
 
+void paddle_update(int c) 
+    {
+      if ((c == 'a'|| c == 'A' || c== KEY_LEFT) && paddle.x > 1) 
+      {
+        paddle.x -= 1; // Move paddle left
+        } else if ((c == 'd'||c=='D'|| C== KEY_RIGHT) && paddle.x < SCREEN_WIDTH - paddle.size - 1) 
+        {
+        paddle.x += 1; // Move paddle right
+        }
+    }
 
 
 
