@@ -223,7 +223,7 @@ void paddle_update(int c)
       if ((c == 'a'|| c == 'A' || c== KEY_LEFT) && paddle.x > 1) 
       {
         paddle.x -= 1; // Move paddle left
-        } else if ((c == 'd'||c=='D'|| C== KEY_RIGHT) && paddle.x < SCREEN_WIDTH - paddle.size - 1) 
+        } else if ((c == 'd' || c == 'D' || c == KEY_RIGHT) && paddle.x < SCREEN_WIDTH - paddle.size - 1) 
         {
         paddle.x += 1; // Move paddle right
         }
