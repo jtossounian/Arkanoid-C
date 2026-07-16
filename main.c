@@ -1,17 +1,17 @@
-// to test in windows 
-#ifdef _WIN32
-    #include <windows.h>
+#include <stdio.h>
+
+
+#ifdef _WIN32 //FOR A WIN USER 
+#include <windows.h>
+#include <pdcurses.h> //used to render and get inputs whitout stoping the program execution 
+#define sleep_ms(ms) Sleep(ms)
+
+#else
+#include <ncurses.h> //used to render and get inputs whitout stoping the program execution 
+#include <unistd.h>
+#define sleep_ms(ms) usleep((ms) * 1000)
 #endif
 
-#include <stdio.h>
-#include <unistd.h>
-#ifdef _WIN32
-#include <pdcurses.h> //used to render and get inputs whitout stoping the program execution 
-#endif
-#ifndef _WIN32
-#include <ncurses.h> //used to render and get inputs whitout stoping the program execution 
-#endif
-//FOR A WIN USER 
 #define SCREEN_WIDTH 50
 #define SCREEN_HEIGHT 48
 
@@ -75,11 +75,11 @@ int main () {
     gameInicialization();
 
     while (game_active == 1) {
-        int c= getch();
+        int c = getch();
         draw_all();
         ball_update();
         paddle_update(c);
-        usleep(640000);
+        sleep_ms(64); //about 16 FPS. Maybe we can make it a modifiable variable later.
     }
     endwin();
     printf("Game Over!\n");
@@ -228,7 +228,8 @@ void paddle_update(int c)
       if ((c == 'a'|| c == 'A' || c== KEY_LEFT) && paddle.x > 1) 
       {
         paddle.x -= 1; // Move paddle left
-        } else if ((c == 'd'||c=='D'|| c== KEY_RIGHT) && paddle.x < SCREEN_WIDTH - paddle.size - 1) 
+        } 
+      else if ((c == 'd' || c =='D' || c == KEY_RIGHT) && paddle.x < (SCREEN_WIDTH - paddle.size - 1)) 
         {
         paddle.x += 1; // Move paddle right
         }
