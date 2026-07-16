@@ -5,7 +5,12 @@
 
 #include <stdio.h>
 #include <unistd.h>
-#include <curses.h> //used to render and get inputs whitout stoping the program execution 
+#ifdef _WIN32
+#include <pdcurses.h> //used to render and get inputs whitout stoping the program execution 
+#endif
+#ifndef _WIN32
+#include <ncurses.h> //used to render and get inputs whitout stoping the program execution 
+#endif
 //FOR A WIN USER 
 #define SCREEN_WIDTH 50
 #define SCREEN_HEIGHT 48
@@ -74,7 +79,7 @@ int main () {
         draw_all();
         ball_update();
         paddle_update(c);
-        usleep(64000);
+        usleep(640000);
     }
     endwin();
     printf("Game Over!\n");
@@ -223,7 +228,7 @@ void paddle_update(int c)
       if ((c == 'a'|| c == 'A' || c== KEY_LEFT) && paddle.x > 1) 
       {
         paddle.x -= 1; // Move paddle left
-        } else if ((c == 'd'||c=='D'|| C== KEY_RIGHT) && paddle.x < SCREEN_WIDTH - paddle.size - 1) 
+        } else if ((c == 'd'||c=='D'|| c== KEY_RIGHT) && paddle.x < SCREEN_WIDTH - paddle.size - 1) 
         {
         paddle.x += 1; // Move paddle right
         }
